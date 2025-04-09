@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Car Racing Game - Test</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        canvas {
+            display: block;
+        }
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            text-align: center;
+            z-index: 1000;
+        }
+        #debug {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+            background-color: rgba(0,0,0,0.5);
+            padding: 10px;
+            max-width: 300px;
+            max-height: 200px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading game...</div>
+    <div id="debug"></div>
+    
+    <!-- Load Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    
+    <script>
+        // Debug function
+        function log(message) {
+            console.log(message);
+            const debug = document.getElementById('debug');
+            debug.innerHTML += message + '<br>';
+        }
+        
+        // Check if Three.js is loaded
+        window.addEventListener('load', function() {
+            log("Window loaded");
+            
+            if (typeof THREE === 'undefined') {
+                log("Error: Three.js library not loaded");
+                document.getElementById('loading').innerHTML = 'Error: Three.js library not loaded';
+                return;
+            }
+            
+            log("Three.js loaded successfully");
+            
+            // Create a simple scene to test Three.js
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+            
+            const geometry = new THREE.BoxGeometry();
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+            
+            camera.position.z = 5;
+            
+            log("Simple scene created");
+            
+            // Animate the cube
+            function animate() {
+                requestAnimationFrame(animate);
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            log("Animation started");
+            
+            // Now try to load the game
+            const script = document.createElement('script');
+            script.src = 'game.js';
+            script.onload = function() {
+                log("Game script loaded");
+                document.getElementById('loading').style.display = 'none';
+            };
+            script.onerror = function() {
+                log("Error loading game.js");
+                document.getElementById('loading').innerHTML = 'Error: Could not load game.js';
+            };
+            document.body.appendChild(script);
+        });
+    </script>
+</body>
+</html> 
